@@ -60,18 +60,16 @@ API Keys for your chosen LLM (OpenAI/Anthropic) populated in .env
 **1. Spin up the infrastructure**
 Start the API, Qdrant Vector DB, and Redis instances via Docker:
 ```
-Bash
 docker-compose up -d
 ```
 **2. Run the Data Pipeline**
 Ingest the industrial catalogs from data/raw_pdfs, extract schemas via Docling, and populate Qdrant:
 ```
-```Bash```
 python scripts/run_pipeline.py
 ```
 **3. Access the Agent**
 The FastAPI server exposes the agent endpoints.
-API Docs: http://localhost:8000/docs
+\nAPI Docs: http://localhost:8000/docs
 
 **🛠️ Tech Stack**
 Extraction: Docling, Pydantic
