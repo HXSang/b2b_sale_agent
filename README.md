@@ -66,7 +66,7 @@ docker-compose up -d
 **2. Run the Data Pipeline**
 Ingest the industrial catalogs from data/raw_pdfs, extract schemas via Docling, and populate Qdrant:
 ```
-Bash
+```Bash```
 python scripts/run_pipeline.py
 ```
 **3. Access the Agent**
