@@ -69,7 +69,8 @@ python scripts/run_pipeline.py
 ```
 **3. Access the Agent**
 The FastAPI server exposes the agent endpoints.
-\nAPI Docs: http://localhost:8000/docs
+
+API Docs: http://localhost:8000/docs
 
 **🛠️ Tech Stack**
 Extraction: Docling, Pydantic
