@@ -13,11 +13,7 @@ class QdrantManager:
         self.client = QdrantClient(path=self.db_path)
         
     def create_indexes(self, collection_name, index_config: dict):
-        if not index_config:
-            print(" - [SKIP] Không có cấu hình index nào được truyền vào.")
-            return
-            
-        print(f"Bắt đầu tạo {len(index_config)} indexes cho collection '{collection_name}'...")
+        
         for field_name, schema_type in index_config.items():
             try:
                 self.client.create_payload_index(
@@ -25,9 +21,9 @@ class QdrantManager:
                     field_name=field_name,
                     field_schema=schema_type,
                 )
-                print(f" - [OK] Indexed: {field_name}")
+                print(f"[OK] Indexed: {field_name}")
             except Exception as e:
-                print(f" - [SKIP] {field_name} (Có thể đã tồn tại hoặc lỗi: {e})")
+                print(f"[SKIP] {field_name} ({e})")
 
     def setup_collection(self, collection_name, vector_size=3072, index_config=None):
         if not self.client.collection_exists(collection_name):
@@ -44,11 +40,10 @@ class QdrantManager:
                     )
                 ),
             )
-            print(f" - [OK] Đã tạo collection: {collection_name}")
             if index_config:
                 self.create_indexes(collection_name, index_config)
         else:
-            print(f" - [SKIP] Collection '{collection_name}' đã tồn tại")
+            print(f"[SKIP] Collection '{collection_name}' đã tồn tại")
 
     def upsert_point(self, collection_name, point_id, vector, payload):
         self.client.upsert(
@@ -71,7 +66,6 @@ class QdrantManager:
                     for p in batch
                 ],
             )
-            print(f" - [OK] Upserted {min(i + batch_size, len(points))}/{len(points)}")
 
     def search(
         self,
