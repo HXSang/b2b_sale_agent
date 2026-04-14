@@ -26,18 +26,15 @@ class QuoteRecord(Base):
     customer_name    = Column(String(255))
     customer_company = Column(String(255))
     customer_contact = Column(String(255))
-    data             = Column(Text, nullable=False)  # Full JSON
+    data             = Column(Text, nullable=False)  
     created_at       = Column(DateTime, default=datetime.utcnow)
 
 class PersistentMemory:
     def __init__(self):
         db_url = os.getenv("DATABASE_URL")
-        if not db_url:
-            raise ValueError("[PersistentMemory] Thiếu DATABASE_URL trong file .env")
         self.engine = create_engine(db_url)
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
-        print("[PersistentMemory] PostgreSQL kết nối thành công.")
 
     def save_message(self, session_id: str, role: str, content: str):
         with self.Session() as db:
@@ -76,7 +73,6 @@ class PersistentMemory:
             )
             db.add(record)
             db.commit()
-            print(f"[PersistentMemory] Đã lưu quote {quote_id}.")
 
     def delete_session(self, session_id: str):
         with self.Session() as db:
