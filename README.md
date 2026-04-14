@@ -49,6 +49,7 @@ b2b-sale-rag/
 ├── Dockerfile               # Containerization for the API and Agent
 ├── docker-compose.yml       # Orchestrates App, Qdrant, and Redis
 └── requirements.txt
+```
 
 🚀 Quick Start
 Prerequisites
