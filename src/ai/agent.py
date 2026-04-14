@@ -23,7 +23,7 @@ class B2BSalesAgent:
         self.quote_handler = QuoteHandler()
 
         self.system_instruction = """
-        Bạn là "Core-Eye Agent" - Kỹ sư Sales B2B chuyên nghiệp, điềm tĩnh trong lĩnh vực THIẾT BỊ TỰ ĐỘNG HÓA VÀ CÔNG NGHIỆP (Cảm biến công nghiệp, LiDAR, Motor...).
+        Bạn là Kỹ sư Sales B2B chuyên nghiệp, điềm tĩnh trong lĩnh vực THIẾT BỊ TỰ ĐỘNG HÓA VÀ CÔNG NGHIỆP (Cảm biến công nghiệp, LiDAR, Motor...).
 
         NGUYÊN TẮC:
         0. GIỚI HẠN LĨNH VỰC: Bạn cung cấp thiết bị cho MỤC ĐÍCH CÔNG NGHIỆP. 
@@ -75,12 +75,9 @@ class B2BSalesAgent:
         print("[Agent] Khởi động xong.")
 
     def chat(self, user_message: str, history: list) -> tuple[str, list]:
-        # 1. Thêm tin nhắn của User
         history.append({"role": "user", "content": user_message})
 
         try:
-            # 2. Gọi OpenAI Lần 1
-            print("[Agent DEBUG] Gửi lên OpenAI lần 1 số lượng messages:", len(history))
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=history,
@@ -91,14 +88,10 @@ class B2BSalesAgent:
 
             response_message = response.choices[0].message
             
-            # CHÚ Ý: Dump cái message của Assistant (có thể chứa tool_calls) vào history
             history.append(response_message.model_dump(exclude_none=True))
 
-            # 3. Xử lý Tool Calling (Nếu có)
             if response_message.tool_calls:
-                print(f"[Agent DEBUG] LLM yêu cầu gọi {len(response_message.tool_calls)} tools.")
-                
-                # Duyệt qua TỪNG tool call
+
                 for tool_call in response_message.tool_calls:
                     name = tool_call.function.name
                     tool_call_id = tool_call.id # Lấy ID để lát trả lời
@@ -125,30 +118,25 @@ class B2BSalesAgent:
                     # QUAN TRỌNG NHẤT: Trả lời LẠI CHO ĐÚNG CÁI ID ĐÓ
                     history.append({
                         "role": "tool",
-                        "tool_call_id": tool_call_id, # Phải khớp với ID lúc nãy
+                        "tool_call_id": tool_call_id, 
                         "name": name,
                         "content": str(tool_result)
                     })
 
-                # 4. Gọi OpenAI Lần 2 (Để nó đọc kết quả Tool và chốt câu trả lời)
-                print("[Agent DEBUG] Đã gắn xong kết quả Tool. Gọi OpenAI lần 2...")
                 final_response = self.client.chat.completions.create(
                     model=self.model_name,
                     messages=history,
                     temperature=0.0
                 )
                 final_text = final_response.choices[0].message.content
-                
-                # Lưu câu trả lời cuối cùng
+
                 history.append({"role": "assistant", "content": final_text})
                 return final_text, history
 
             else:
-                # Không có Tool, LLM trả lời thẳng
                 return response_message.content, history
 
         except Exception as e:
-            # In ra lỗi chi tiết để dễ debug
             import traceback
             traceback.print_exc()
             return f"Lỗi kỹ thuật: {e}", history
