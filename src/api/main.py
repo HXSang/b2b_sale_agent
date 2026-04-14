@@ -24,16 +24,10 @@ def chat_with_agent(request: ChatRequest):
     try:
         system_rule = agent.system_instruction
         history = memory.get_history(request.session_id, system_instruction=system_rule)
-        print("\n=== [DEBUG] HỒ SƠ TỪ REDIS LẤY RA ===")
-        print(history)
-        print("======================================\n")
         reply, new_history = agent.chat(request.message, history)
         memory.save_history(request.session_id, new_history)
         test_data = memory.client.get(f"session:{request.session_id}")
-        print(f"[DEBUG KIỂM TRA LẠI TỦ]:{test_data}")
-        print(f"[System] Đã cất thành công hồ sơ vào Redis cho ID: {request.session_id}")
         return ChatResponse(reply=reply)
         
     except Exception as e:
-        print(f"[ERROR] Lỗi to rồi: {e}")
         raise HTTPException(status_code=500, detail=str(e))
