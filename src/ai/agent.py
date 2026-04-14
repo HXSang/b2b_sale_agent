@@ -115,7 +115,6 @@ class B2BSalesAgent:
                         print(f"[Cảnh báo] Lỗi khi chạy tool {name}: {tool_e}")
                         tool_result = f"Error: Tool execution failed due to {tool_e}"
                         
-                    # QUAN TRỌNG NHẤT: Trả lời LẠI CHO ĐÚNG CÁI ID ĐÓ
                     history.append({
                         "role": "tool",
                         "tool_call_id": tool_call_id, 
